@@ -32,10 +32,10 @@ describe('Client Tests', () => {
     const message = Math.random();
     const signature = EthCrypto.sign(
       client.wallet.privateKey,
-      EthCrypto.hash.keccak256(message),
+      EthCrypto.hash.keccak256(message)
     );
     it('should set successfully sign messages', () => {
-      assert.equal(client.sign(EthCrypto.hash.keccak256(message)), signature);
+      assert.equal(client.sign(message), signature);
     });
   });
 
@@ -51,15 +51,15 @@ describe('Client Tests', () => {
       Alice = new Client();
       Bob = new Client();
       Kevin = new Client();
-      signature = Alice.sign(EthCrypto.hash.keccak256(message));
+      signature = Alice.sign(message);
     });
     it('should be considered valid', () => {
       assert(
         Kevin.verify(
           signature,
           EthCrypto.hash.keccak256(message),
-          Alice.wallet.address,
-        ),
+          Alice.wallet.address
+        )
       );
     });
     it('should be considered invalid', () => {
@@ -67,8 +67,8 @@ describe('Client Tests', () => {
         !Kevin.verify(
           signature,
           EthCrypto.hash.keccak256(message),
-          Bob.wallet.address,
-        ),
+          Bob.wallet.address
+        )
       );
     });
   });
