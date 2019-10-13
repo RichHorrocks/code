@@ -8,14 +8,14 @@ class Client {
   }
 
   // Creates a keccak256/SHA3 hash of some data
-  Hash(data) {
+  hash(data) {
     const dataStr = JSON.stringify(data);
     return EthCrypto.hash.keccak256(data);
   }
 
   // Signs a hash of data with the client's private key
   sign(message) {
-    const messageHash = this.toHash(message);
+    const messageHash = this.hash(message);
     return EthCrypto.sign(this.wallet.privateKey, messageHash);
   }
 
@@ -33,10 +33,20 @@ class Client {
 
   // Generates new transactions
   generateTx(to, amount, type) {
-    // TODO:
     // create an unsigned transaction
+    const rawTx = {
+      type,
+      amount,
+      from: this.wallet.address, // sender address
+      to // reciever address
+    };
+
     // create a signature of the transaction
+    const signedTx = this.sign(rawTx, this.wallet.privateKey);
+    console.log(signedTx);
+
     // return a Javascript object with the unsigned transaction and transaction signature
+    return { raw: rawTx, sig: signedTx };
   }
 }
 

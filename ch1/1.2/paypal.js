@@ -8,8 +8,8 @@ class Paypal extends Client {
     // the state of the network (accounts and balances)
     this.state = {
       [this.wallet.address]: {
-        balance: 1000000,
-      },
+        balance: 1000000
+      }
     };
     // the history of transactions
     this.txHistory = [];
@@ -18,64 +18,88 @@ class Paypal extends Client {
   // Checks that the sender of a transaction is the same as the signer
   checkTxSignature(tx) {
     // get the signature from the transaction
-    // TODO
-    // if the signature is invalid print an error to the console and return false
-    // TODO
-    // return true if the transaction is valid
-    // TODO
+    const signature = tx.sig;
+    const sender = tx.raw.from;
+    const hash = this.hash(tx.raw);
+
+    if (!this.verify(signature, hash, sender)) {
+      console.log('TX signature is invalid');
+      return false;
+    }
+    return true;
   }
 
-  // Checks if the user's address is already in the state, and if not, adds the user's address to the state
+  // Checks if the user's address is already in the state, and if not, adds
+  // the user's address to the state
   checkUserAddress(tx) {
     // check if the sender is in the state
-    // TODO
     // if the sender is not in the state, create an account for them
-    // TODO
+    const { from } = tx.raw;
+    if (!(from in this.state)) {
+      this.state.from = 0;
+    }
+
     // check if the receiver is in the state
-    // TODO
     // if the receiver is not in the state, create an account for them
-    // TODO
-    // once the checks on both accounts pass (they're both in the state), return true
-    // TODO
+    const { to } = tx.raw;
+    if (!(to in this.state)) {
+      this.state.to = 0;
+    }
+
+    // once the checks on both accounts pass, return true
+    return true;
   }
 
   // Checks the transaction type and ensures that the transaction is valid based on that type
   checkTxType(tx) {
-    // if the transaction type is 'mint'
-    // TODO
-    // check that the sender is PayPal
-    // TODO
-    // if the check fails, print an error to the concole stating why and return false so that the transaction is not processed
-    // TODO
-    // if the check passes, return true
-    // TODO
-    // if the transaction type is 'check'
-    // TODO
-    // print the balance of the sender to the console
-    // TODO
-    // return false so that the stateTransitionFunction does not process the tx
-    // TODO
-    // if the transaction type is 'send'
-    // TODO
-    // check that the transaction amount is positive and the sender has an account balance greater than or equal to the transaction amount
-    // if a check fails, print an error to the console stating why and return false
-    // TODO
-    // if the check passes, return true
-    // TODO
+    switch (tx.raw.type) {
+      case 'mint':
+        // if the transaction type is 'mint'
+        // check that the sender is PayPal
+        // if the check fails, print an error to the concole stating why and
+        // return false so'mint'the transaction is not processed
+
+        if (tx.raw.sender !== 'Paypal') {
+          console.log('TX is MINT but sender is not PAYPAL');
+          return false;
+        }
+        break;
+      case 'check':
+        // if the transaction type is 'check'
+        // print the balance of the sender to the console
+        // return false so that the stateTransitionFunction does not process the tx
+        console.log(this.wallet[tx.raw.from]);
+        return false;
+      case 'send':
+        // if the transaction type is 'send'
+        // check that the transaction amount is positive and the sender has an
+        // account balance greater than or equal to the transaction amount
+        if (tx.raw.amount < 0) {
+          console.log('TX amount is negative');
+        } else if (!(tx.raw.from in this.wallet)) {
+          console.log('Sender does not have an account');
+        }
+      // if a check fails, print an error to the console stating why and return false
+      // if the check passes, return true
+      default:
+        return false;
+    }
+
+    return true;
   }
 
   // Checks if a transaction is valid, adds it to the transaction history, and updates the state of accounts and balances
-  checkTx(tx) {
+  static checkTx(tx) {
     // check that the transaction signature is valid
-    // TODO
     // check that the transaction sender and receiver are in the state
-    // TODO
     // check that the transaction type is valid
-    // TODO
     // if all checks pass return true
-    // TODO
     // if any checks fail return false
-    // TODO
+    return (
+      this.checkTxSignature(tx) &&
+      this.checkUserAddress(tx) &&
+      this.checkTxType(tx)
+    );
   }
 
   // Updates account balances according to a transaction and adds the transaction to the history
@@ -93,9 +117,12 @@ class Paypal extends Client {
   // Process a transaction
   processTx(tx) {
     // check the transaction is valid
-    // TODO
+    if (this.checkTx(tx)) {
+    }
+
     // apply the transaction to Paypal's state
-    // TODO
+    if (this.applyTx(tx)) {
+    }
   }
 }
 

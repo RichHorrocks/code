@@ -28,8 +28,6 @@ class Client {
   // Verifies that a messageHash is signed by a certain address
   verify(signature, messageHash, address) {
     const signer = EthCrypto.recover(signature, messageHash);
-    console.log(signer);
-    console.log(address);
     return signer === address;
   }
 }
